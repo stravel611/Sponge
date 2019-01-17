@@ -1,9 +1,9 @@
 # coding: utf-8
 from app.exts import db
-from werkzeug.exceptions import BadRequest, Conflict
+from werkzeug.exceptions import BadRequest, Conflict, NotFound
 
 
-def find_or_create(model, key, value):
+def create_or_raise(model, key, value):
     item = model.query.filter(getattr(model, key) == value).first()
     if not item:
         item = model()
@@ -13,6 +13,14 @@ def find_or_create(model, key, value):
         return item
     else:
         raise AlreadyExisted()
+
+
+def check_or_raise(model, key, value):
+    item = model.query.filter(getattr(model, key) == value).first()
+    if item:
+        return item
+    else:
+        raise NotFound()
 
 
 class MissingFormData(BadRequest):

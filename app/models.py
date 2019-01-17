@@ -25,6 +25,10 @@ class Item(db.Model):
     category = db.relationship('Category', back_populates='items')
     records = db.relationship('Record', back_populates='item')
 
+    @property
+    def recent_records(self):
+        return list(reversed(self.records[-5:]))
+
 
 class Record(db.Model):
     id = db.Column(db.Integer, primary_key=True)

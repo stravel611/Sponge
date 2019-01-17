@@ -2,7 +2,7 @@
 from flask import Blueprint
 from flask_restful import Api
 from .category import Category, CategoryMember
-from .item import Item, ItemMember
+from .item import Item, ItemMember, ItemOfCategory
 from .record import Record, RecordMember
 from .tag import Tag, TagMember
 
@@ -14,7 +14,7 @@ errors = {
     },
     'MissingFormData': {
         'status': 400,
-        'message': '表单数据缺失，请检查表单数据是否完整。'
+        'message': '表单数据缺失，请检查表单数据是否完整，类型是否正确。'
     },
     'NotFound': {
         'status': 404,
@@ -44,6 +44,7 @@ api = Api(api_bp, errors=errors)
 api.add_resource(Category, '/category')
 api.add_resource(CategoryMember, '/category/<int:category_id>')
 api.add_resource(Item, '/item')
+api.add_resource(ItemOfCategory, '/category/<int:category_id>/item')
 api.add_resource(ItemMember, '/item/<int:item_id>')
 api.add_resource(Record, '/record')
 api.add_resource(RecordMember, '/record/<int:record_id>')
