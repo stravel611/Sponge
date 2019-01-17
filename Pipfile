@@ -9,6 +9,7 @@ python-dotenv = "*"
 flask-sqlalchemy = "*"
 
 [dev-packages]
+faker = "*"
 
 [requires]
 python_version = "3.6"
