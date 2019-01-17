@@ -2,7 +2,7 @@
 from flask import Flask
 from app.settings import Config
 from app.exts import db
-from app.bp_api import api
+from app.bp_api_v1 import api_bp
 import click
 from app.models import Category, Item, Record, Tag, record_tag
 import app.fakes as fake
@@ -13,7 +13,7 @@ app.config.from_object(Config)
 db.init_app(app)
 
 
-app.register_blueprint(api)
+app.register_blueprint(api_bp)
 
 
 @app.cli.command()
