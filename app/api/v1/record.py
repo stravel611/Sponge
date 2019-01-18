@@ -2,9 +2,23 @@
 from flask_restful import Resource, fields, marshal_with
 from app.models import Record as RecordM, Item as ItemM, Category as CategoryM
 from flask import abort, request
-from app.utils import MissingFormData, RedundantUpdate
+from app.utils import check_or_raise, MissingFormData, RedundantUpdate
 from app.exts import db
 from datetime import datetime
+
+
+def time_filter(query):
+    from_time = request.args.get('from', type=int)
+    to_time = request.args.get('to', type=int)
+    if from_time:
+        query = query.filter(
+            RecordM.start > datetime.fromtimestamp(from_time / 1000)
+        )
+    if to_time:
+        query = query.filter(
+            RecordM.finish < datetime.fromtimestamp(to_time / 1000)
+        )
+    return query
 
 
 single_record_fields = {
@@ -48,7 +62,7 @@ class Record(Resource):
     @marshal_with(multi_records_fields)
     def get(self):
         """获取所有记录"""
-        records = RecordM.query.all()
+        records = time_filter(RecordM.query).all()
         return {
             'status': 200,
             'message': 'OK',
@@ -122,8 +136,9 @@ class RecordOfCategory(Resource):
     @marshal_with(multi_records_fields)
     def get(self, category_id):
         """获取一个分类下的所有记录"""
-        records = RecordM.query.join(RecordM.item)\
-            .filter(CategoryM.id==category_id).all()
+        query = RecordM.query.join(RecordM.item)\
+            .filter(CategoryM.id == category_id)
+        records = time_filter(query).all()
         return {
             'status': 200,
             'message': 'OK',
@@ -135,7 +150,8 @@ class RecordOfItem(Resource):
     @marshal_with(multi_records_fields)
     def get(self, item_id):
         """获取一个条目选的所有记录"""
-        records = RecordM.query.filter_by(item_id=item_id).all()
+        query = RecordM.query.filter_by(item_id=item_id)
+        records = time_filter(query).all()
         return {
             'status': 200,
             'message': 'OK',
@@ -148,8 +164,10 @@ class RecordOfItem(Resource):
         start_stamp = request.form.get('start', type=int)
         remark = request.form.get('remark', '')
         if start_stamp:
+            item = check_or_raise(ItemM, 'id', item_id)
             start = datetime.fromtimestamp(start_stamp / 1000)
             record = RecordM(start=start, remark=remark)
+            record.item = item
             db.session.add(record)
             db.session.commit()
             return {
