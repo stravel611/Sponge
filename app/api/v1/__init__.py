@@ -34,12 +34,6 @@ errors = {
 api_bp = Blueprint('api', __name__, url_prefix='/api/v1')
 
 
-@api_bp.after_request
-def add_header(res):
-    res.headers['Access-Control-Allow-Origin'] = 'http://localhost:8080'
-    return res
-
-
 api = Api(api_bp, errors=errors)
 api.add_resource(Category, '/category')
 api.add_resource(CategoryMember, '/category/<int:category_id>')

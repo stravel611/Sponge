@@ -18,6 +18,7 @@ class BaseTestCase(unittest.TestCase):
         self.context = app.test_request_context()
         self.context.push()
         self.client = app.test_client()
+        self.runner = app.test_cli_runner()
 
         db.create_all()
 
@@ -26,10 +27,28 @@ class BaseTestCase(unittest.TestCase):
         self.context.pop()
 
 
+class CliCommandTestCase(BaseTestCase):
+    def test_initdb(self):
+        result = self.runner.invoke(args=['init-db'])
+        self.assertIn('数据库初始化完毕！', result.output)
+
+    def test_forge(self):
+        result = self.runner.invoke(args=['forge', '--drop'], input='y\n')
+        self.assertIn('数据生成完毕！', result.output)
+        categories = Category.query.all()
+        self.assertEqual(len(categories), 5)
+        items = Item.query.all()
+        self.assertEqual(len(items), 20)
+        records = Record.query.all()
+        self.assertEqual(len(records), 50)
+        tags = Tag.query.all()
+        self.assertEqual(len(tags), 10)
+
+
 class CategoryTestCase(BaseTestCase):
     def setUp(self):
         super().setUp()
-        category = Category(name='test')
+        category = Category(name='test_category')
         db.session.add(category)
         db.session.commit()
 
@@ -42,11 +61,15 @@ class CategoryTestCase(BaseTestCase):
         # 获取所有分类
         res = self.client.get(BASE_URL + '/category').get_json()
         self.assertEqual(res['status'], 200)
-        self.assertEqual(res['data'][0]['name'], 'test')
+        self.assertEqual(res['data'][0]['name'], 'test_category')
 
         # 创建一个分类，但未提供参数
         res = self.client.post(BASE_URL + '/category').get_json()
         self.assertEqual(res['status'], 400)
+
+        # 创建一个分类，但分类已存在
+        res = self.client.post(BASE_URL + '/category', data={'name': 'test_category'}).get_json()
+        self.assertEqual(res['status'], 409)
 
         # 创建一个分类
         res = self.client.post(BASE_URL + '/category', data={'name': 'new_category'}).get_json()
@@ -68,6 +91,10 @@ class CategoryTestCase(BaseTestCase):
         # 更新一个分类，但未提供参数
         res = self.client.put(BASE_URL + '/category/1').get_json()
         self.assertEqual(res['status'], 400)
+
+        # 更新一个分类的名称，但与原内容相同
+        res = self.client.put(BASE_URL + '/category/1', data={'name': 'test_category'}).get_json()
+        self.assertEqual(res['status'], 409)
 
         # 更新一个分类的名称
         res = self.client.put(BASE_URL + '/category/1', data={'name': 'changed_name'}).get_json()
@@ -120,6 +147,10 @@ class ItemTestCase(BaseTestCase):
         res = self.client.post(BASE_URL + '/item').get_json()
         self.assertEqual(res['status'], 400)
 
+        # 创建一个条目，但条目已存在
+        res = self.client.post(BASE_URL + '/item', data={'name': 'test_item'}).get_json()
+        self.assertEqual(res['status'], 409)
+
         # 创建一个条目
         res = self.client.post(BASE_URL + '/item', data={'name': 'new_item'}).get_json()
         self.assertEqual(res['status'], 201)
@@ -140,6 +171,10 @@ class ItemTestCase(BaseTestCase):
         # 更新一个条目，但未提供参数
         res = self.client.put(BASE_URL + '/item/1').get_json()
         self.assertEqual(res['status'], 400)
+
+        # 更新一个条目的名称，但与原内容相同
+        res = self.client.put(BASE_URL + '/item/1', data={'name': 'test_item'}).get_json()
+        self.assertEqual(res['status'], 409)
 
         # 更新一个条目的名称
         res = self.client.put(BASE_URL + '/item/1', data={'name': 'changed_name'}).get_json()
@@ -182,6 +217,10 @@ class ItemTestCase(BaseTestCase):
         res = self.client.post(BASE_URL + '/category/1/item').get_json()
         self.assertEqual(res['status'], 400)
 
+        # 在一个分类下创建一个条目，但条目已存在
+        res = self.client.post(BASE_URL + '/category/1/item', data={'name': 'test_item'}).get_json()
+        self.assertEqual(res['status'], 409)
+
         # 在一个分类下创建一个条目
         res = self.client.post(BASE_URL + '/category/1/item', data={'name': 'new_item'}).get_json()
         self.assertEqual(res['status'], 201)
@@ -219,7 +258,7 @@ class RecordTestCase(BaseTestCase):
         res = self.client.get(BASE_URL + '/record').get_json()
         self.assertEqual(res['status'], 200)
         self.assertEqual(res['data'][0]['remark'], 'test_record_1')
-        
+
     def test_record_member(self):
         """
         api: /record/<int:record_id>
@@ -272,7 +311,7 @@ class RecordTestCase(BaseTestCase):
         # 获取一条不存在（已删除）的记录
         res = self.client.get(BASE_URL + '/record/1').get_json()
         self.assertEqual(res['status'], 404)
-        
+
     def test_record_of_category(self):
         """
         api: /category/<int:category_id>/record
@@ -282,7 +321,7 @@ class RecordTestCase(BaseTestCase):
         res = self.client.get(BASE_URL + '/category/1/record').get_json()
         self.assertEqual(res['status'], 200)
         self.assertEqual(len(res['data']), 2)
-        
+
     def test_record_of_item(self):
         """
         api: /item/<int:item_id>/record
@@ -315,7 +354,7 @@ class RecordTestCase(BaseTestCase):
         from_time = int(datetime(2019, 1, 11, 0, 0, 0).timestamp() * 1000)
         to_time = int(datetime(2019, 1, 11, 12, 0, 0).timestamp() * 1000)
         qs = f'?from={from_time}&to={to_time}'
-        res = self.client.get(BASE_URL + '/record'+qs).get_json()
+        res = self.client.get(BASE_URL + '/record' + qs).get_json()
         self.assertEqual(res['status'], 200)
         self.assertEqual(len(res['data']), 1)
 
@@ -386,7 +425,6 @@ class TagTestCase(BaseTestCase):
         res = self.client.get(BASE_URL + '/item/1/tag').get_json()
         self.assertEqual(res['status'], 200)
         self.assertEqual(len(res['data']), 2)
-        self.assertEqual(res['data'][0]['name'], 'test_tag_1')
 
     def test_tag_of_record(self):
         """
