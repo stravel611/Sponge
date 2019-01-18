@@ -28,6 +28,7 @@ single_record_fields = {
         'id': fields.Integer,
         'start': fields.DateTime(dt_format='iso8601'),
         'finish': fields.DateTime(dt_format='iso8601'),
+        'remark': fields.String,
         'item': fields.Nested({
             'id': fields.Integer,
             'name': fields.String
@@ -46,6 +47,7 @@ multi_records_fields = {
         'id': fields.Integer,
         'start': fields.DateTime(dt_format='iso8601'),
         'finish': fields.DateTime(dt_format='iso8601'),
+        'remark': fields.String,
         'item': fields.Nested({
             'id': fields.Integer,
             'name': fields.String
@@ -119,7 +121,7 @@ class RecordMember(Resource):
 
     def delete(self, record_id):
         """删除一条记录"""
-        record = ItemM.query.get(record_id)
+        record = RecordM.query.get(record_id)
         if record:
             db.session.delete(record)
             db.session.commit()
@@ -149,7 +151,7 @@ class RecordOfCategory(Resource):
 class RecordOfItem(Resource):
     @marshal_with(multi_records_fields)
     def get(self, item_id):
-        """获取一个条目选的所有记录"""
+        """获取一个条目下的所有记录"""
         query = RecordM.query.filter_by(item_id=item_id)
         records = time_filter(query).all()
         return {

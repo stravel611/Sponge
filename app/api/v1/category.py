@@ -53,7 +53,7 @@ class Category(Resource):
             return {
                 'status': 201,
                 'message': 'Created',
-                'data': [category]
+                'data': category
             }, 201
         else:
             raise MissingFormData()
