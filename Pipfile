@@ -8,9 +8,9 @@ flask = "*"
 python-dotenv = "*"
 flask-sqlalchemy = "*"
 flask-restful = "*"
+faker = "*"
 
 [dev-packages]
-faker = "*"
 coverage = "*"
 
 [requires]

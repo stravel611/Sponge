@@ -117,5 +117,3 @@ dmypy.json
 # dev
 *.db
 .idea
-fakes.py
-/whooshee
