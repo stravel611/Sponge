@@ -76,12 +76,12 @@ class CategoryMember(Resource):
     @marshal_with(single_category_fields)
     def put(self, category_id):
         """更新一个分类的信息"""
+        category = CategoryM.query.get(category_id)
+        if category is None:
+            abort(404)
         name = request.form.get('name', '')
         if name:
-            category = CategoryM.query.get(category_id)
-            if category is None:
-                abort(404)
-            elif category.name == name:
+            if category.name == name:
                 raise RedundantUpdate()
             else:
                 category.name = name
@@ -95,7 +95,6 @@ class CategoryMember(Resource):
         else:
             raise MissingFormData()
 
-    @marshal_with(single_category_fields)
     def delete(self, category_id):
         """删除一个分类"""
         category = CategoryM.query.get(category_id)

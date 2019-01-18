@@ -3,7 +3,7 @@ from flask import Blueprint
 from flask_restful import Api
 from .category import Category, CategoryMember
 from .item import Item, ItemMember, ItemOfCategory
-from .record import Record, RecordMember
+from .record import Record, RecordMember, RecordOfCategory, RecordOfItem
 from .tag import Tag, TagMember
 
 
@@ -44,9 +44,11 @@ api = Api(api_bp, errors=errors)
 api.add_resource(Category, '/category')
 api.add_resource(CategoryMember, '/category/<int:category_id>')
 api.add_resource(Item, '/item')
-api.add_resource(ItemOfCategory, '/category/<int:category_id>/item')
 api.add_resource(ItemMember, '/item/<int:item_id>')
+api.add_resource(ItemOfCategory, '/category/<int:category_id>/item')
 api.add_resource(Record, '/record')
 api.add_resource(RecordMember, '/record/<int:record_id>')
+api.add_resource(RecordOfCategory, '/category/<int:category_id>/record')
+api.add_resource(RecordOfItem, '/item/<int:item_id>/record')
 api.add_resource(Tag, '/tag')
 api.add_resource(TagMember, '/tag/<int:tag_id>')

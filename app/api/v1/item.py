@@ -90,12 +90,12 @@ class ItemMember(Resource):
     @marshal_with(single_item_fields)
     def put(self, item_id):
         """更新一个条目的信息"""
+        item = ItemM.query.get(item_id)
+        if item is None:
+            abort(404)
         name = request.form.get('name', '')
         if name:
-            item = ItemM.query.get(item_id)
-            if item is None:
-                abort(404)
-            elif item.name == name:
+            if item.name == name:
                 raise RedundantUpdate()
             else:
                 item.name = name
@@ -109,7 +109,6 @@ class ItemMember(Resource):
         else:
             raise MissingFormData()
 
-    @marshal_with(single_item_fields)
     def delete(self, item_id):
         """删除一个条目"""
         item = ItemM.query.get(item_id)
