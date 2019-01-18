@@ -21,7 +21,7 @@ single_item_fields = {
             'start': fields.DateTime(dt_format='iso8601'),
             'finish': fields.DateTime(dt_format='iso8601'),
             'remark': fields.String
-        }), attribute='recent_records')
+        }))
     })
 }
 
@@ -40,7 +40,7 @@ multi_items_fields = {
             'start': fields.DateTime(dt_format='iso8601'),
             'finish': fields.DateTime(dt_format='iso8601'),
             'remark': fields.String
-        }), attribute='recent_records')
+        }))
     }))
 }
 

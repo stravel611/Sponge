@@ -5,7 +5,7 @@ from werkzeug.exceptions import BadRequest, Conflict, NotFound
 
 def create_or_raise(model, key, value):
     item = model.query.filter(getattr(model, key) == value).first()
-    if not item:
+    if item is None:
         item = model()
         setattr(item, key, value)
         db.session.add(item)
@@ -21,6 +21,16 @@ def check_or_raise(model, key, value):
         return item
     else:
         raise NotFound()
+
+
+def get_or_create(model, key, value):
+    item = model.query.filter(getattr(model, key) == value).first()
+    if item is None:
+        item = model()
+        setattr(item, key, value)
+        db.session.add(item)
+        db.session.commit()
+    return item
 
 
 class MissingFormData(BadRequest):

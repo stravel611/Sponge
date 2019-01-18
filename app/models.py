@@ -47,3 +47,7 @@ class Tag(db.Model):
     name = db.Column(db.String(10))
 
     records = db.relationship('Record', secondary=record_tag, back_populates='tags')
+
+    @property
+    def recent_records(self):
+        return list(reversed(self.records[-5:]))

@@ -4,7 +4,7 @@ from flask_restful import Api
 from .category import Category, CategoryMember
 from .item import Item, ItemMember, ItemOfCategory
 from .record import Record, RecordMember, RecordOfCategory, RecordOfItem
-from .tag import Tag, TagMember
+from .tag import Tag, TagMember, TagOfCategory, TagOfItem, TagOfRecord
 
 
 errors = {
@@ -52,3 +52,6 @@ api.add_resource(RecordOfCategory, '/category/<int:category_id>/record')
 api.add_resource(RecordOfItem, '/item/<int:item_id>/record')
 api.add_resource(Tag, '/tag')
 api.add_resource(TagMember, '/tag/<int:tag_id>')
+api.add_resource(TagOfCategory, '/category/<int:category_id>/tag')
+api.add_resource(TagOfItem, '/item/<int:item_id>/tag')
+api.add_resource(TagOfRecord, '/record/<int:record_id>/tag')
