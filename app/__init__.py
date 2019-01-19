@@ -19,6 +19,7 @@ app.register_blueprint(api_bp_v1)
 @app.after_request
 def add_header(res):
     res.headers['Access-Control-Allow-Origin'] = 'http://localhost:8080'
+    res.headers['Access-Control-Allow-Methods'] = '*'
     return res
 
 

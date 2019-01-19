@@ -64,7 +64,7 @@ class Record(Resource):
     @marshal_with(multi_records_fields)
     def get(self):
         """获取所有记录"""
-        records = time_filter(RecordM.query).all()
+        records = time_filter(RecordM.query).order_by(RecordM.id.desc()).all()
         return {
             'status': 200,
             'message': 'OK',
@@ -140,7 +140,7 @@ class RecordOfCategory(Resource):
         """获取一个分类下的所有记录"""
         query = RecordM.query.join(RecordM.item)\
             .filter(CategoryM.id == category_id)
-        records = time_filter(query).all()
+        records = time_filter(query).order_by(RecordM.id.desc()).all()
         return {
             'status': 200,
             'message': 'OK',
@@ -153,7 +153,7 @@ class RecordOfItem(Resource):
     def get(self, item_id):
         """获取一个条目下的所有记录"""
         query = RecordM.query.filter_by(item_id=item_id)
-        records = time_filter(query).all()
+        records = time_filter(query).order_by(RecordM.id.desc()).all()
         return {
             'status': 200,
             'message': 'OK',
