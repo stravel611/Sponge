@@ -1,9 +1,10 @@
 # coding: utf-8
 from flask_restful import Resource, fields, marshal_with
-from app.models import Item as ItemM, Category as CategoryM
+from app.models import Item as ItemM, Category as CategoryM, Record as RecordM
 from flask import abort, request
 from app.utils import create_or_raise, check_or_raise,  MissingFormData, RedundantUpdate
 from app.exts import db
+from .record import time_filter
 
 
 single_item_fields = {
@@ -41,6 +42,15 @@ multi_items_fields = {
             'finish': fields.DateTime(dt_format='iso8601'),
             'remark': fields.String
         }))
+    }))
+}
+
+calculation_fields = {
+    'status': fields.Integer,
+    'message': fields.String,
+    'data': fields.List(fields.Nested({
+        'name': fields.String,
+        'value': fields.Integer
     }))
 }
 
@@ -152,3 +162,25 @@ class ItemOfCategory(Resource):
             }, 201
         else:
             raise MissingFormData()
+
+
+class CalcOfItem(Resource):
+    @marshal_with(calculation_fields)
+    def get(self, category_id):
+        """获取一个分类下的所有条目的记录的时间总和（秒）"""
+        query = RecordM.query.join(RecordM.item).filter(ItemM.category_id == category_id)
+        records = time_filter(query).all()
+        calc_dict = {}
+        for x in records:
+            if x.item.name in calc_dict.keys():
+                calc_dict[x.item.name] += (x.finish.timestamp() - x.start.timestamp())
+            else:
+                calc_dict[x.item.name] = (x.finish.timestamp() - x.start.timestamp())
+        calc_list = [x for x in calc_dict.items()]
+        calc_list.sort(key=lambda x: x[1], reverse=True)
+        res = [{'name': x[0], 'value':x[1]} for x in calc_list]
+        return {
+            'status': 200,
+            'message': 'OK',
+            'data': res
+        }

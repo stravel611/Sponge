@@ -1,9 +1,10 @@
 # coding: utf-8
 from flask_restful import Resource, fields, marshal_with
-from app.models import Category as CategoryM
+from app.models import Category as CategoryM, Record as RecordM
 from flask import abort, request
 from app.utils import create_or_raise, MissingFormData, RedundantUpdate
 from app.exts import db
+from .record import time_filter
 
 
 single_category_fields = {
@@ -29,6 +30,16 @@ multi_categories_fields = {
             'id': fields.Integer,
             'name': fields.String
         }))
+    }))
+}
+
+calculation_fields = {
+    'status': fields.Integer,
+    'message': fields.String,
+    'data': fields.List(fields.Nested({
+        'id': fields.Integer,
+        'name': fields.String,
+        'value': fields.Integer
     }))
 }
 
@@ -108,3 +119,26 @@ class CategoryMember(Resource):
             }
         else:
             abort(404)
+
+
+class CalcOfCategory(Resource):
+    @marshal_with(calculation_fields)
+    def get(self):
+        """获取一个分类下的所有条目的记录的时间总和（秒）"""
+        query = RecordM.query
+        records = time_filter(query).all()
+        calc_dict = {}
+        for x in records:
+            if x.item.category.name in calc_dict.keys():
+                calc_dict[x.item.category.name] += (x.finish.timestamp() - x.start.timestamp())
+            else:
+                calc_dict[x.item.category.name] = (x.finish.timestamp() - x.start.timestamp())
+        calc_list = [x for x in calc_dict.items()]
+        calc_list.sort(key=lambda x: x[1], reverse=True)
+        res = [{'name': x[0], 'value':x[1]} for x in calc_list]
+        return {
+            'status': 200,
+            'message': 'OK',
+            'data': res
+        }
+

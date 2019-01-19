@@ -1,8 +1,8 @@
 # coding: utf-8
 from flask import Blueprint
 from flask_restful import Api
-from .category import Category, CategoryMember
-from .item import Item, ItemMember, ItemOfCategory
+from .category import Category, CategoryMember, CalcOfCategory
+from .item import Item, ItemMember, ItemOfCategory, CalcOfItem
 from .record import Record, RecordMember, RecordOfCategory, RecordOfItem
 from .tag import Tag, TagMember, TagOfCategory, TagOfItem, TagOfRecord
 
@@ -37,6 +37,8 @@ api_bp = Blueprint('api', __name__, url_prefix='/api/v1')
 api = Api(api_bp, errors=errors)
 api.add_resource(Category, '/category')
 api.add_resource(CategoryMember, '/category/<int:category_id>')
+api.add_resource(CalcOfCategory, '/category/calculation')
+api.add_resource(CalcOfItem, '/category/<int:category_id>/calculation')
 api.add_resource(Item, '/item')
 api.add_resource(ItemMember, '/item/<int:item_id>')
 api.add_resource(ItemOfCategory, '/category/<int:category_id>/item')
