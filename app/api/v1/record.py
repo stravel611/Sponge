@@ -2,7 +2,7 @@
 from flask_restful import Resource, fields, marshal_with
 from app.models import Record as RecordM, Item as ItemM, Category as CategoryM
 from flask import abort, request
-from app.utils import check_or_raise, MissingFormData, RedundantUpdate
+from app.utils import check_or_raise, MissingFormData, RedundantUpdate, ParseToTimeStamp
 from app.exts import db
 from datetime import datetime
 
@@ -27,7 +27,9 @@ single_record_fields = {
     'data': fields.Nested({
         'id': fields.Integer,
         'start': fields.DateTime(dt_format='iso8601'),
+        'start_stamp': ParseToTimeStamp(attribute='start'),
         'finish': fields.DateTime(dt_format='iso8601'),
+        'finish_stamp': ParseToTimeStamp(attribute='finish'),
         'remark': fields.String,
         'item': fields.Nested({
             'id': fields.Integer,
@@ -46,7 +48,9 @@ multi_records_fields = {
     'data': fields.List(fields.Nested({
         'id': fields.Integer,
         'start': fields.DateTime(dt_format='iso8601'),
+        'start_stamp': ParseToTimeStamp(attribute='start'),
         'finish': fields.DateTime(dt_format='iso8601'),
+        'finish_stamp': ParseToTimeStamp(attribute='finish'),
         'remark': fields.String,
         'item': fields.Nested({
             'id': fields.Integer,

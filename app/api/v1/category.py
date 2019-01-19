@@ -37,7 +37,6 @@ calculation_fields = {
     'status': fields.Integer,
     'message': fields.String,
     'data': fields.List(fields.Nested({
-        'id': fields.Integer,
         'name': fields.String,
         'value': fields.Integer
     }))

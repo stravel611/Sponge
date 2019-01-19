@@ -1,6 +1,7 @@
 # coding: utf-8
 from app.exts import db
 from werkzeug.exceptions import BadRequest, Conflict, NotFound
+from flask_restful.fields import Raw
 
 
 def create_or_raise(model, key, value):
@@ -43,3 +44,8 @@ class AlreadyExisted(Conflict):
 
 class RedundantUpdate(Conflict):
     """请求更新内容与原内容相同"""
+
+
+class ParseToTimeStamp(Raw):
+    def format(self, value):
+        return value.timestamp() * 1000
