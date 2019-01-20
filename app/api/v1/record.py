@@ -2,14 +2,15 @@
 from flask_restful import Resource, fields, marshal_with
 from app.models import Record as RecordM, Item as ItemM, Category as CategoryM
 from flask import abort, request
-from app.utils import check_or_raise, MissingFormData, RedundantUpdate, ParseToTimeStamp
+from app.utils import check_or_raise, MissingFormData, RedundantUpdate, ParseToTimeStamp, ReadableTime
 from app.exts import db
 from datetime import datetime
 
 
-def time_filter(query):
+def query_filter(query):
     from_time = request.args.get('from', type=int)
     to_time = request.args.get('to', type=int)
+    limit = request.args.get('limit', type=int)
     if from_time:
         query = query.filter(
             RecordM.start > datetime.fromtimestamp(from_time / 1000)
@@ -18,6 +19,8 @@ def time_filter(query):
         query = query.filter(
             RecordM.finish < datetime.fromtimestamp(to_time / 1000)
         )
+    if limit:
+        query = query.limit(limit)
     return query
 
 
@@ -26,9 +29,9 @@ single_record_fields = {
     'message': fields.String,
     'data': fields.Nested({
         'id': fields.Integer,
-        'start': fields.DateTime(dt_format='iso8601'),
+        'start': ReadableTime(attribute='start'),
         'start_stamp': ParseToTimeStamp(attribute='start'),
-        'finish': fields.DateTime(dt_format='iso8601'),
+        'finish': ReadableTime(attribute='finish'),
         'finish_stamp': ParseToTimeStamp(attribute='finish'),
         'remark': fields.String,
         'item': fields.Nested({
@@ -47,9 +50,9 @@ multi_records_fields = {
     'message': fields.String,
     'data': fields.List(fields.Nested({
         'id': fields.Integer,
-        'start': fields.DateTime(dt_format='iso8601'),
+        'start': ReadableTime(attribute='start'),
         'start_stamp': ParseToTimeStamp(attribute='start'),
-        'finish': fields.DateTime(dt_format='iso8601'),
+        'finish': ReadableTime(attribute='finish'),
         'finish_stamp': ParseToTimeStamp(attribute='finish'),
         'remark': fields.String,
         'item': fields.Nested({
@@ -68,7 +71,7 @@ class Record(Resource):
     @marshal_with(multi_records_fields)
     def get(self):
         """获取所有记录"""
-        records = time_filter(RecordM.query).order_by(RecordM.id.desc()).all()
+        records = query_filter(RecordM.query).order_by(RecordM.id.desc()).all()
         return {
             'status': 200,
             'message': 'OK',
@@ -144,7 +147,7 @@ class RecordOfCategory(Resource):
         """获取一个分类下的所有记录"""
         query = RecordM.query.join(RecordM.item)\
             .filter(CategoryM.id == category_id)
-        records = time_filter(query).order_by(RecordM.id.desc()).all()
+        records = query_filter(query).order_by(RecordM.id.desc()).all()
         return {
             'status': 200,
             'message': 'OK',
@@ -157,7 +160,7 @@ class RecordOfItem(Resource):
     def get(self, item_id):
         """获取一个条目下的所有记录"""
         query = RecordM.query.filter_by(item_id=item_id)
-        records = time_filter(query).order_by(RecordM.id.desc()).all()
+        records = query_filter(query).order_by(RecordM.id.desc()).all()
         return {
             'status': 200,
             'message': 'OK',

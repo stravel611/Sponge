@@ -2,7 +2,7 @@
 from flask_restful import Resource, fields, marshal_with
 from app.models import Item as ItemM, Category as CategoryM, Tag as TagM, Record as RecordM
 from flask import abort, request
-from app.utils import get_or_create, check_or_raise,  MissingFormData, ParseToTimeStamp
+from app.utils import get_or_create, check_or_raise,  MissingFormData, ParseToTimeStamp, ReadableTime
 from app.exts import db
 
 
@@ -14,9 +14,9 @@ single_tag_fields = {
         'name': fields.String,
         'recent_records': fields.List(fields.Nested({
             'id': fields.Integer,
-            'start': fields.DateTime(dt_format='iso8601'),
+            'start': ReadableTime(attribute='start'),
             'start_stamp': ParseToTimeStamp(attribute='start'),
-            'finish': fields.DateTime(dt_format='iso8601'),
+            'finish': ReadableTime(attribute='finish'),
             'finish_stamp': ParseToTimeStamp(attribute='finish'),
             'remark': fields.String
         }))
@@ -31,9 +31,9 @@ multi_tags_fields = {
         'name': fields.String,
         'recent_records': fields.List(fields.Nested({
             'id': fields.Integer,
-            'start': fields.DateTime(dt_format='iso8601'),
+            'start': ReadableTime(attribute='start'),
             'start_stamp': ParseToTimeStamp(attribute='start'),
-            'finish': fields.DateTime(dt_format='iso8601'),
+            'finish': ReadableTime(attribute='finish'),
             'finish_stamp': ParseToTimeStamp(attribute='finish'),
             'remark': fields.String
         }))

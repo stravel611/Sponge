@@ -2,9 +2,9 @@
 from flask_restful import Resource, fields, marshal_with
 from app.models import Item as ItemM, Category as CategoryM, Record as RecordM
 from flask import abort, request
-from app.utils import create_or_raise, check_or_raise,  MissingFormData, RedundantUpdate, ParseToTimeStamp
+from app.utils import create_or_raise, check_or_raise,  MissingFormData, RedundantUpdate, ParseToTimeStamp, ReadableTime
 from app.exts import db
-from .record import time_filter
+from .record import query_filter
 
 
 single_item_fields = {
@@ -19,9 +19,9 @@ single_item_fields = {
         }),
         'recent_records': fields.List(fields.Nested({
             'id': fields.Integer,
-            'start': fields.DateTime(dt_format='iso8601'),
+            'start': ReadableTime(attribute='start'),
             'start_stamp': ParseToTimeStamp(attribute='start'),
-            'finish': fields.DateTime(dt_format='iso8601'),
+            'finish': ReadableTime(attribute='finish'),
             'finish_stamp': ParseToTimeStamp(attribute='finish'),
             'remark': fields.String
         }))
@@ -40,9 +40,9 @@ multi_items_fields = {
         }),
         'recent_records': fields.List(fields.Nested({
             'id': fields.Integer,
-            'start': fields.DateTime(dt_format='iso8601'),
+            'start': ReadableTime(attribute='start'),
             'start_stamp': ParseToTimeStamp(attribute='start'),
-            'finish': fields.DateTime(dt_format='iso8601'),
+            'finish': ReadableTime(attribute='finish'),
             'finish_stamp': ParseToTimeStamp(attribute='finish'),
             'remark': fields.String
         }))
@@ -173,7 +173,7 @@ class CalcOfItem(Resource):
     def get(self, category_id):
         """获取一个分类下的所有条目的记录的时间总和（秒）"""
         query = RecordM.query.join(RecordM.item).filter(ItemM.category_id == category_id)
-        records = time_filter(query).all()
+        records = query_filter(query).all()
         calc_dict = {}
         for x in records:
             if x.item.name in calc_dict.keys():

@@ -49,3 +49,8 @@ class RedundantUpdate(Conflict):
 class ParseToTimeStamp(Raw):
     def format(self, value):
         return value.timestamp() * 1000
+
+
+class ReadableTime(Raw):
+    def format(self, value):
+        return f'{value.month}月{value.day}日 {value.hour}:{value.minute}:{value.second}'
