@@ -126,6 +126,8 @@ class CalcOfCategory(Resource):
         """获取一个分类下的所有条目的记录的时间总和（秒）"""
         query = RecordM.query
         records = query_filter(query).all()
+        if not records[-1].finish:
+            records = records.pop(0)
         calc_dict = {}
         for x in records:
             if x.item.category.name in calc_dict.keys():

@@ -1,6 +1,6 @@
 # coding: utf-8
 from flask_restful import Resource, fields, marshal_with
-from app.models import Record as RecordM, Item as ItemM, Category as CategoryM
+from app.models import Record as RecordM, Item as ItemM
 from flask import abort, request
 from app.utils import check_or_raise, MissingFormData, RedundantUpdate, ParseToTimeStamp, ReadableTime
 from app.exts import db
@@ -73,6 +73,8 @@ class Record(Resource):
         """获取所有记录"""
         query = RecordM.query.order_by(RecordM.id.desc())
         records = query_filter(query).all()
+        if not records[0].finish:
+            records.pop(0)
         return {
             'status': 200,
             'message': 'OK',
@@ -150,6 +152,8 @@ class RecordOfCategory(Resource):
             .filter(ItemM.category_id == category_id)\
             .order_by(RecordM.id.desc())
         records = query_filter(query).all()
+        if not records[0].finish:
+            records.pop(0)
         return {
             'status': 200,
             'message': 'OK',
@@ -172,19 +176,29 @@ class RecordOfItem(Resource):
     @marshal_with(single_record_fields)
     def post(self, item_id):
         """在一个条目下创建一条记录"""
-        start_stamp = request.form.get('start', type=int)
         remark = request.form.get('remark', '')
-        if start_stamp:
-            item = check_or_raise(ItemM, 'id', item_id)
-            start = datetime.fromtimestamp(start_stamp / 1000)
-            record = RecordM(start=start, remark=remark)
-            record.item = item
-            db.session.add(record)
-            db.session.commit()
-            return {
-               'status': 201,
-               'message': 'Created',
-               'data': record
-            }, 201
-        else:
-            raise MissingFormData()
+        item = check_or_raise(ItemM, 'id', item_id)
+        start = datetime.now()
+        record = RecordM(start=start, remark=remark)
+        record.item = item
+        db.session.add(record)
+        db.session.commit()
+        return {
+           'status': 201,
+           'message': 'Created',
+           'data': record
+        }, 201
+
+
+class RecordProceeding(Resource):
+    @marshal_with(single_record_fields)
+    def get(self):
+        """正在进行的记录"""
+        record = RecordM.query.order_by(RecordM.id.desc()).first()
+        if record and record.finish:
+            record = None
+        return {
+            'status': 200,
+            'message': 'OK',
+            'data': record
+        }

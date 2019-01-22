@@ -53,4 +53,7 @@ class ParseToTimeStamp(Raw):
 
 class ReadableTime(Raw):
     def format(self, value):
-        return f'{value.month}月{value.day}日 {value.hour}:{value.minute}:{value.second}'
+        hour = value.hour if value.hour >=10 else '0'+str(value.hour)
+        minute = value.minute if value.minute >= 10 else '0'+str(value.minute)
+        second = value.second if value.second >= 10 else '0'+str(value.second)
+        return f'{value.month}月{value.day}日 {hour}:{minute}:{second}'
