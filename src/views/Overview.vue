@@ -2,10 +2,10 @@
   <div id="overview">
     <div class="charts">
       <div class="chart-container">
-      <overview-chart chart_id='chart_1' chart_title='最近一周'></overview-chart>
+      <overview-chart chart_id='chart_1' chart_title='最近一周' defaultDays="7"></overview-chart>
       </div>
       <div class="chart-container">
-      <overview-chart chart_id='chart_2' chart_title='最近三天'></overview-chart>
+      <overview-chart chart_id='chart_2' chart_title='最近三天' defaultDays="3"></overview-chart>
       </div>
     </div>
     <overview-history></overview-history>

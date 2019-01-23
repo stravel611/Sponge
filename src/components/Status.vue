@@ -78,61 +78,61 @@ export default {
   },
   methods: {
     startRecord: function() {
-      const itemId = this.selectedOptions[1]
-      const url = '/item/'+itemId+'/record'
-      this.$axios.post(url).then((res) => {
-        this.$store.dispatch('fetchProceeding')
-      })
+      const itemId = this.selectedOptions[1];
+      const url = "/item/" + itemId + "/record";
+      this.$axios.post(url).then(res => {
+        this.$store.dispatch("fetchProceeding");
+      });
     },
     endRecord: function() {
-      const endTime = new Date
-      const recordId = this.$store.state.proceedingId
-      const url = '/record/'+recordId
-      const formData = new FormData()
-      formData.append('finish', endTime.getTime())
-      this.$axios.put(url, formData).then((res) => {
-        this.clearTimer()
-        this.$store.dispatch('fetchProceeding')
-      })
+      const endTime = new Date();
+      const recordId = this.$store.state.proceedingId;
+      const url = "/record/" + recordId;
+      const formData = new FormData();
+      formData.append("finish", endTime.getTime());
+      this.$axios.put(url, formData).then(res => {
+        this.clearTimer();
+        this.$store.dispatch("fetchProceeding");
+      });
     },
     checkTimer: function(count, unit) {
       if (count == 60) {
-        if (unit == 'second') {
-          this.second = 0
-          this.minute++
-        }else {
-          this.minute = 0
-          this.hour++
+        if (unit == "second") {
+          this.second = 0;
+          this.minute++;
+        } else {
+          this.minute = 0;
+          this.hour++;
         }
       }
     },
     setTimer: function() {
       return setInterval(() => {
-        this.second++
-      }, 1000)
+        this.second++;
+      }, 1000);
     },
     clearTimer: function() {
-      clearInterval(this.timer)
+      clearInterval(this.timer);
     }
   },
   watch: {
     "$store.state.proceeding": function(to, from) {
       if (to == null) {
-        this.second = this.minute = this.hour = 0
-      }else {
+        this.second = this.minute = this.hour = 0;
+      } else {
         const now = new Date();
         const gap = Math.floor((now - to) / 1000);
         this.second = gap % 60;
         this.minute = Math.floor(gap / 60) % 60;
         this.hour = Math.floor(gap / 3600);
-        this.timer = this.setTimer()
+        this.timer = this.setTimer();
       }
     },
-    'second': function(to, from) {
-      this.checkTimer(to, 'second')
+    second: function(to, from) {
+      this.checkTimer(to, "second");
     },
-    'minute': function(to, from) {
-      this.checkTimer(to, 'minute')
+    minute: function(to, from) {
+      this.checkTimer(to, "minute");
     }
   }
 };

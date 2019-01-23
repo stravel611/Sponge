@@ -7,9 +7,10 @@ var echarts = require("echarts/lib/echarts");
 require("echarts/lib/chart/pie");
 require("echarts/lib/component/tooltip");
 require("echarts/lib/component/title");
+import { Message } from "element-ui";
 
 export default {
-  props: ["chart_id", "chart_title"],
+  props: ["chart_id", "chart_title", "defaultDays"],
   data() {
     return {
       chart_data: []
@@ -18,7 +19,10 @@ export default {
   computed: {
     chartTitle() {
       if (!this.chart_title) {
-        return "分类详情";
+        const categoryName = this.$store.state.categories[
+          this.$route.params.id - 1
+        ].name;
+        return categoryName;
       } else {
         return this.chart_title;
       }
@@ -73,22 +77,25 @@ export default {
       };
       myChart.setOption(option);
     },
-    // redraw() {
-    //   if (this.$store.state.current_)
-    // }
-    fetchData(category_id) {
+    fetchData(category_id, recallDays) {
       let url;
       if (category_id == 0) {
         url = "/category/calculation?";
       } else {
         url = "/category/" + category_id + "/calculation?";
       }
-      let times = this.$store.state.timeRange;
-      if (times[0] != 0) {
-        url += "from=" + times[0] + "&";
-      }
-      if (times[1] != 0) {
-        url += "to=" + times[1];
+      if (recallDays == 0) {
+        let times = this.$store.state.timeRange;
+        if (times[0] != 0) {
+          url += "from=" + times[0] + "&";
+        }
+        if (times[1] != 0) {
+          url += "to=" + times[1];
+        }
+      } else {
+        const now = new Date();
+        const time = now.getTime() - recallDays * 24 * 3600 * 1000;
+        url += "from=" + time;
       }
       this.$axios.get(url).then(res => (this.chart_data = res.data.data));
     }
@@ -96,21 +103,25 @@ export default {
   mounted() {},
   watch: {
     "$store.state.current_category": function(to, from) {
-      this.fetchData(to);
+      this.fetchData(to, this.defaultDays);
     },
     chart_data: function(to, from) {
       if (to.length == 0) {
-        alert("没有数据");
+        Message({
+          type: "error",
+          message: "该时间段没有记录，请选择其他时间段",
+          duration: 2000
+        });
       } else {
         this.drawPie();
       }
     },
     "$store.state.timeRange": function(to, from) {
-      this.fetchData(this.$store.state.current_category);
+      this.fetchData(this.$store.state.current_category, 0);
     },
     "$store.state.proceedingId": function(to, from) {
       if (to == null && from > 0) {
-        this.fetchData(this.$store.state.current_category);
+        this.fetchData(this.$store.state.current_category, 0);
       }
     }
   }

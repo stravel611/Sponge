@@ -73,7 +73,7 @@ class Record(Resource):
         """获取所有记录"""
         query = RecordM.query.order_by(RecordM.id.desc())
         records = query_filter(query).all()
-        if not records[0].finish:
+        if records and not records[0].finish:
             records.pop(0)
         return {
             'status': 200,
@@ -152,7 +152,7 @@ class RecordOfCategory(Resource):
             .filter(ItemM.category_id == category_id)\
             .order_by(RecordM.id.desc())
         records = query_filter(query).all()
-        if not records[0].finish:
+        if records and not records[0].finish:
             records.pop(0)
         return {
             'status': 200,

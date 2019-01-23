@@ -52,7 +52,6 @@ export default {
     },
     fetchData: function(category_id) {
       let url
-      // let category_id = this.$store.state.current_category
       if (category_id == 0) {
         url = "/record?limit=8";
       } else {
@@ -62,8 +61,6 @@ export default {
         res => (this.items = res.data.data)
       )
     }
-  },
-  mounted() {
   },
   watch: {
     '$store.state.current_category': function(to, from) {
@@ -80,7 +77,6 @@ export default {
 
 <style scoped>
 .history {
-  /* width: 100%; */
   height: calc(60vh - 85px);
   margin: 5px;
 }
