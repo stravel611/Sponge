@@ -127,7 +127,7 @@ class CalcOfCategory(Resource):
         query = RecordM.query
         records = query_filter(query).all()
         if not records[-1].finish:
-            records = records.pop(0)
+            records.pop()
         calc_dict = {}
         for x in records:
             if x.item.category.name in calc_dict.keys():

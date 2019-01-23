@@ -175,7 +175,7 @@ class CalcOfItem(Resource):
         query = RecordM.query.join(RecordM.item).filter(ItemM.category_id == category_id)
         records = query_filter(query).all()
         if not records[-1].finish:
-            records = records.pop(0)
+            records.pop()
         calc_dict = {}
         for x in records:
             if x.item.name in calc_dict.keys():

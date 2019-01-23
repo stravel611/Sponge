@@ -8,9 +8,9 @@ export default new Vuex.Store({
     state: {
         categories: [],         // 分类
         current_category: null, // 当前显示的分类的 id
+        proceeding: null,       // 进行中的项目(timestamp)
+        proceedingId: null,     // 进行中的项目的 id
         timeRange: [0, 0],      // 当前选择的时间范围(timestamp)
-        proceedingId: null,
-        proceeding: null        // 进行中的项目(timestamp)
     },
     getters: {
         getCategoryById: (state) => (id) => {
