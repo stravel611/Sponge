@@ -9,7 +9,7 @@
     <div class="input-area">
       <el-input v-model="todoInput" @keyup.enter.native="AddTodo" placeholder="按回车添加 todo"/>
     </div>
-    <div class="todos">
+    <div class="todo-items">
       <ul v-if="showUnfinished">
         <todo-item
           v-for="(item, index) in todoList.unfinished"
@@ -100,7 +100,6 @@ export default {
   },
   mounted() {
     const todoList = fetch();
-    console.log(todoList)
     if (todoList) {
       this.todoList = todoList;
     }
@@ -124,6 +123,10 @@ export default {
 }
 .actions, .input-area {
   margin-bottom: 4px;
+}
+.todo-items {
+  height: calc(100% - 74px);
+  overflow-y: auto;
 }
 ul {
   list-style: none;

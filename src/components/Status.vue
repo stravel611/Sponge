@@ -80,7 +80,7 @@ export default {
     startRecord: function() {
       const itemId = this.selectedOptions[1];
       const url = "/item/" + itemId + "/record";
-      this.$axios.post(url).then(res => {
+      this.$axios.post(url).then(() => {
         this.$store.dispatch("fetchProceeding");
       });
     },
@@ -90,7 +90,7 @@ export default {
       const url = "/record/" + recordId;
       const formData = new FormData();
       formData.append("finish", endTime.getTime());
-      this.$axios.put(url, formData).then(res => {
+      this.$axios.put(url, formData).then(() => {
         this.clearTimer();
         this.$store.dispatch("fetchProceeding");
       });
@@ -116,7 +116,7 @@ export default {
     }
   },
   watch: {
-    "$store.state.proceeding": function(to, from) {
+    "$store.state.proceeding": function(to) {
       if (to == null) {
         this.second = this.minute = this.hour = 0;
       } else {
@@ -128,10 +128,10 @@ export default {
         this.timer = this.setTimer();
       }
     },
-    second: function(to, from) {
+    second: function(to) {
       this.checkTimer(to, "second");
     },
-    minute: function(to, from) {
+    minute: function(to) {
       this.checkTimer(to, "minute");
     }
   }

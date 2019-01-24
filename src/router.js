@@ -19,7 +19,7 @@ export default new Router({
       name: 'category',
       component: Category
     }, {
-      path: '/',
+      path: '/management',
       name: 'management',
       component: Management
     }

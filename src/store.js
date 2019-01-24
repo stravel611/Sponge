@@ -11,6 +11,8 @@ export default new Vuex.Store({
         proceeding: null,       // 进行中的项目(timestamp)
         proceedingId: null,     // 进行中的项目的 id
         timeRange: [0, 0],      // 当前选择的时间范围(timestamp)
+        itemTableData: [],
+        recordTableData: []
     },
     getters: {
         getCategoryById: (state) => (id) => {

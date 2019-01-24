@@ -7,7 +7,6 @@ var echarts = require("echarts/lib/echarts");
 require("echarts/lib/chart/pie");
 require("echarts/lib/component/tooltip");
 require("echarts/lib/component/title");
-import { Message } from "element-ui";
 
 export default {
   props: ["chartId", "chartTitle", "defaultDays"],
@@ -106,12 +105,12 @@ export default {
   },
   mounted() {},
   watch: {
-    "$store.state.current_category": function(to, from) {
+    "$store.state.current_category": function(to) {
       this.fetchData(to, this.defaultDays);
     },
-    chart_data: function(to, from) {
+    chart_data: function(to) {
       if (to.length == 0) {
-        Message({
+        this.$message({
           type: "error",
           message: "该时间段没有记录，请选择其他时间段",
           duration: 2000
@@ -120,7 +119,7 @@ export default {
         this.drawPie();
       }
     },
-    "$store.state.timeRange": function(to, from) {
+    "$store.state.timeRange": function() {
       this.fetchData(this.$store.state.current_category, 0);
     },
     "$store.state.proceedingId": function(to, from) {
