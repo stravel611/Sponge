@@ -142,7 +142,6 @@ export default {
 .status {
   width: 100%;
   height: calc((100vh - 60px) / 2 - 1px);
-  border-bottom: solid 1px #e6e6e6;
   display: flex;
   flex-direction: column;
 }

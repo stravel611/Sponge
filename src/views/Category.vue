@@ -2,7 +2,7 @@
   <div id="overview">
     <div class="charts">
       <div class="chart-container">
-      <category-chart chart_id='chart_1' defaultDays="7"></category-chart>
+      <category-chart chartId='chart_1' defaultDays="7"></category-chart>
       </div>
       <div class="picker-container">
       <category-time-picker></category-time-picker>

@@ -1,5 +1,5 @@
 <template>
-  <el-card class="box-card chart" :id="chart_id"></el-card>
+  <el-card class="box-card chart" :id="chartId"></el-card>
 </template>
 
 <script>
@@ -10,15 +10,15 @@ require("echarts/lib/component/title");
 import { Message } from "element-ui";
 
 export default {
-  props: ["chart_id", "chart_title", "defaultDays"],
+  props: ["chartId", "chartTitle", "defaultDays"],
   data() {
     return {
       chart_data: []
     };
   },
   computed: {
-    chartTitle() {
-      if (!this.chart_title) {
+    title() {
+      if (!this.chartTitle) {
         let categoryName
         let self = this
         self.$store.state.categories.forEach(function(category) {
@@ -28,16 +28,16 @@ export default {
         })
         return categoryName;
       } else {
-        return this.chart_title;
+        return this.chartTitle;
       }
     }
   },
   methods: {
     drawPie() {
-      var myChart = echarts.init(document.getElementById(this.chart_id));
+      var myChart = echarts.init(document.getElementById(this.chartId));
       var option = {
         title: {
-          text: this.chartTitle,
+          text: this.title,
           x: "center"
         },
         tooltip: {
