@@ -10,20 +10,20 @@ record_tag = db.Table(
 
 
 class Category(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(10))
 
-    items = db.relationship('Item', back_populates='category')
+    items = db.relationship('Item', back_populates='category', cascade='all delete-orphan')
 
 
 class Item(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(10))
 
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
 
     category = db.relationship('Category', back_populates='items')
-    records = db.relationship('Record', back_populates='item')
+    records = db.relationship('Record', back_populates='item', cascade='all delete-orphan')
 
     @property
     def recent_records(self):
@@ -31,7 +31,7 @@ class Item(db.Model):
 
 
 class Record(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     start = db.Column(db.DateTime)
     finish = db.Column(db.DateTime)
     remark = db.Column(db.String(120))
@@ -43,7 +43,7 @@ class Record(db.Model):
 
 
 class Tag(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(10))
 
     records = db.relationship('Record', secondary=record_tag, back_populates='tags')
