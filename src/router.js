@@ -15,7 +15,7 @@ export default new Router({
       name: 'overview',
       component: Overview
     }, {
-      path: '/category/:id',
+      path: '/category/:categoryId',
       name: 'category',
       component: Category
     }, {

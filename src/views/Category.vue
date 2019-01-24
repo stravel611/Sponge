@@ -35,12 +35,12 @@ export default {
   watch: {
     // 路由变化时，设置当前分类 id
     '$route' (to, from) {
-      this.$store.commit('setCategory', to.params.id)
+      this.$store.commit('setCategory', to.params.categoryId)
     },
   },
   mounted() {
     // 直接加载时，设置当前分类 id
-    this.$store.commit('setCategory', this.$route.params.id)
+    this.$store.commit('setCategory', this.$route.params.categoryId)
   } 
 }
 </script>

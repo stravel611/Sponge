@@ -15,8 +15,9 @@
         <i class="el-icon-menu"></i>
         <span>分类</span>
       </template>
-      <el-menu-item v-for="item in categories" :key="item.id" :index="'2-' + item.id">
-        <router-link :to="'/category/' + item.id">{{ item.name }}</router-link>
+      <el-menu-item v-for="category in categories" :key="category.id" :index="'2-' + category.id">
+        <router-link :to="{name: 'category', params: {categoryId: category.id}}">{{ category.name }}</router-link>
+        <!-- <router-link :to="'/category/' + item.id">{{ item.name }}</router-link> -->
       </el-menu-item>
     </el-submenu>
     <el-menu-item index="3">

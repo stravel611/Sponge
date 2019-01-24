@@ -19,9 +19,13 @@ export default {
   computed: {
     chartTitle() {
       if (!this.chart_title) {
-        const categoryName = this.$store.state.categories[
-          this.$route.params.id - 1
-        ].name;
+        let categoryName
+        let self = this
+        self.$store.state.categories.forEach(function(category) {
+          if (category.id == self.$route.params.categoryId) {
+            categoryName = category.name
+          }
+        })
         return categoryName;
       } else {
         return this.chart_title;
@@ -121,7 +125,7 @@ export default {
     },
     "$store.state.proceedingId": function(to, from) {
       if (to == null && from > 0) {
-        this.fetchData(this.$store.state.current_category, 0);
+        this.fetchData(this.$store.state.current_category, 7);
       }
     }
   }
