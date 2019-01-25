@@ -48,7 +48,8 @@ export default {
     return {};
   },
   mounted() {
-    this.$store.dispatch('fetchProceeding')
+    this.$store.dispatch("fetchProceeding");
+    this.$store.dispatch("fetchCategory");
   }
 };
 </script>

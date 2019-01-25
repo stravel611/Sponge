@@ -27,11 +27,11 @@ const ShowError = () => {
 export const api = axios.create(config);
 
 api.interceptors.request.use(
-  function(config) {
+  function (config) {
     // Do something before request is sent
     return config;
   },
-  function(error) {
+  function (error) {
     // Do something with request error
     return Promise.reject(error);
   }
@@ -39,18 +39,18 @@ api.interceptors.request.use(
 
 // Add a response interceptor
 api.interceptors.response.use(
-  function(response) {
+  function (response) {
     // Do something with response data
     return response;
   },
-  function(error) {
+  function (error) {
     // Do something with response error
     ShowError()
     return Promise.reject(error);
   }
 );
 
-Plugin.install = function(Vue, options) {
+Plugin.install = function (Vue, options) {
   Vue.axios = api;
   window.axios = api;
   Object.defineProperties(Vue.prototype, {

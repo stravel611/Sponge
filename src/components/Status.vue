@@ -136,7 +136,7 @@ export default {
     }
   },
   destroyed() {
-    this.checkTimer()
+    this.checkTimer();
   }
 };
 </script>

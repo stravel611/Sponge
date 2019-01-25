@@ -2,10 +2,12 @@
   <el-card class="box-card time-picker">
     <div class="picker-items">
       <el-row class="picker-item">
-        <el-col :span=8>
-          <div class="picker-label"><span>选择时间</span></div>
+        <el-col :span="8">
+          <div class="picker-label">
+            <span>选择时间</span>
+          </div>
         </el-col>
-        <el-col :span=16>
+        <el-col :span="16">
           <el-date-picker
             v-model="timeRange"
             size="large"
@@ -15,35 +17,34 @@
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
-            @change="pickRange">
-          </el-date-picker>
+            @change="pickRange"
+          ></el-date-picker>
         </el-col>
       </el-row>
       <el-row class="picker-item">
-        <el-col :span=8>
-          <div class="picker-label"><span>按周选择</span></div>
+        <el-col :span="8">
+          <div class="picker-label">
+            <span>按周选择</span>
+          </div>
         </el-col>
-        <el-col :span=16>
+        <el-col :span="16">
           <el-date-picker
             v-model="timeWeek"
             type="week"
             format="yyyy 第 WW 周"
             placeholder="选择周"
-            @change="pickWeek">
-          </el-date-picker>
+            @change="pickWeek"
+          ></el-date-picker>
         </el-col>
       </el-row>
       <el-row class="picker-item">
-        <el-col :span=8>
-          <div class="picker-label"><span>按月选择</span></div>
+        <el-col :span="8">
+          <div class="picker-label">
+            <span>按月选择</span>
+          </div>
         </el-col>
-        <el-col :span=16>
-          <el-date-picker
-            v-model="timeMonth"
-            type="month"
-            placeholder="选择月"
-            @change="pickMonth">
-          </el-date-picker>
+        <el-col :span="16">
+          <el-date-picker v-model="timeMonth" type="month" placeholder="选择月" @change="pickMonth"></el-date-picker>
         </el-col>
       </el-row>
     </div>
@@ -61,24 +62,20 @@ export default {
   },
   methods: {
     pickRange(range) {
-      const fromTime = range[0].getTime()
-      const toTime = range[1].getTime() + 24 * 3600 * 1000
-      this.$store.commit('setTimeRange', [fromTime, toTime])
+      const fromTime = range[0].getTime();
+      const toTime = range[1].getTime() + 24 * 3600 * 1000;
+      this.$store.commit("setTimeRange", [fromTime, toTime]);
     },
     pickWeek(time) {
-      const fromTime = time.getTime()
-      const toTime = fromTime + 7 * 24 * 3600 * 1000
-      this.$store.commit('setTimeRange', [fromTime, toTime])
+      const fromTime = time.getTime();
+      const toTime = fromTime + 7 * 24 * 3600 * 1000;
+      this.$store.commit("setTimeRange", [fromTime, toTime]);
     },
     pickMonth(time) {
-      const fromTime = time.getTime()
-      const toTime = fromTime + 30 * 24 * 3600 * 1000
-      this.$store.commit('setTimeRange', [fromTime, toTime])
+      const fromTime = time.getTime();
+      const toTime = fromTime + 30 * 24 * 3600 * 1000;
+      this.$store.commit("setTimeRange", [fromTime, toTime]);
     }
-  },
-  watch: {
-  },
-  mounted() {
   }
 };
 </script>

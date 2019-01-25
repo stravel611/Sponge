@@ -18,13 +18,13 @@ export default {
   computed: {
     title() {
       if (!this.chartTitle) {
-        let categoryName
-        let self = this
+        let categoryName;
+        let self = this;
         self.$store.state.categories.forEach(function(category) {
           if (category.id == self.$route.params.categoryId) {
-            categoryName = category.name
+            categoryName = category.name;
           }
-        })
+        });
         return categoryName;
       } else {
         return this.chartTitle;
@@ -103,10 +103,11 @@ export default {
       this.$axios.get(url).then(res => (this.chart_data = res.data.data));
     }
   },
-  mounted() {},
   watch: {
     "$store.state.current_category": function(to) {
-      this.fetchData(to, this.defaultDays);
+      if (to != null) {
+        this.fetchData(to, this.defaultDays);
+      }
     },
     chart_data: function(to) {
       if (to.length == 0) {

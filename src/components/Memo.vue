@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import TodoItem from './TodoItem.vue'
+import TodoItem from "./TodoItem.vue";
 const STORAGE_KEY = "sponge-memos";
 
 function save(item) {
@@ -48,7 +48,7 @@ function fetch() {
 
 export default {
   components: {
-    'todo-item': TodoItem
+    "todo-item": TodoItem
   },
   data() {
     return {
@@ -93,7 +93,7 @@ export default {
   watch: {
     todoList: {
       handler: function(newList) {
-        save(newList)
+        save(newList);
       },
       deep: true
     }
@@ -121,7 +121,8 @@ export default {
   padding: 5px;
   width: 100%;
 }
-.actions, .input-area {
+.actions,
+.input-area {
   margin-bottom: 4px;
 }
 .todo-items {

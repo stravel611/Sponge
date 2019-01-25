@@ -142,6 +142,9 @@ export default {
       this.reset()
       })
     }
+  },
+  mounted() {
+    this.$store.commit('setCategory', null)
   }
 }
 </script>

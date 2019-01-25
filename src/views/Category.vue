@@ -2,10 +2,10 @@
   <div id="overview">
     <div class="charts">
       <div class="chart-container">
-      <category-chart chartId='chart_1' defaultDays="7"></category-chart>
+        <category-chart chartId="chart_1" defaultDays="7"></category-chart>
       </div>
       <div class="picker-container">
-      <category-time-picker></category-time-picker>
+        <category-time-picker></category-time-picker>
       </div>
     </div>
     <category-history></category-history>
@@ -13,36 +13,27 @@
 </template>
 
 <script>
-import Chart from '../components/Chart'
-import History from '../components/History'
-import TimePicker from '../components/TimePicker'
+import Chart from "../components/Chart";
+import History from "../components/History";
+import TimePicker from "../components/TimePicker";
 
 export default {
   components: {
-    'category-chart': Chart,
-    'category-history': History,
-    'category-time-picker': TimePicker
-  },
-  data() {
-    return {
-      // categories: [],
-    }
-  },
-  computed: {
-  },
-  methods: {
+    "category-chart": Chart,
+    "category-history": History,
+    "category-time-picker": TimePicker
   },
   watch: {
     // 路由变化时，设置当前分类 id
-    '$route' (to, from) {
-      this.$store.commit('setCategory', to.params.categoryId)
-    },
+    $route(to, from) {
+      this.$store.commit("setCategory", to.params.categoryId);
+    }
   },
   mounted() {
     // 直接加载时，设置当前分类 id
-    this.$store.commit('setCategory', this.$route.params.categoryId)
-  } 
-}
+    this.$store.commit("setCategory", this.$route.params.categoryId);
+  }
+};
 </script>
 
 <style scoped>
@@ -51,7 +42,8 @@ export default {
   flex-direction: row;
   justify-content: space-between;
 }
-.chart-container, .picker-container {
+.chart-container,
+.picker-container {
   display: flex;
   width: 50%;
 }

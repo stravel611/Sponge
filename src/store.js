@@ -32,7 +32,7 @@ export default new Vuex.Store({
         setProceeding(state, record) {
             if (record.id == 0) {
                 state.proceedingId = null
-            }else {
+            } else {
                 state.proceedingId = record.id
             }
             state.proceeding = record.start_stamp
