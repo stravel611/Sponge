@@ -134,6 +134,9 @@ export default {
     minute: function(to) {
       this.checkTimer(to, "minute");
     }
+  },
+  destroyed() {
+    this.checkTimer()
   }
 };
 </script>

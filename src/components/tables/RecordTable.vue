@@ -88,10 +88,11 @@ export default {
       })
     },
     modifyRemark(index, row) {
-      this.$emit('showEditDialog', row.id, '修改备注')
+      this.$emit('showEditDialog', row.id, row.remark, '修改备注')
     },
     handleDelete: function(index, row) {
-      this.$emit('showDeleteDialog', row.id, row.name)
+      const name = 'id 为 '+row.id+' 的记录'
+      this.$emit('showDeleteDialog', row.id, name)
     }
   },
   mounted() {

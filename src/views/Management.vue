@@ -10,7 +10,7 @@
         </item-table>
       </el-tab-pane>
       <el-tab-pane label="记录管理" name="record">
-        <record-table @showEditDialog="showEditDialog" @showDeleteDialog="showDeleteDialog" ref = 'recordTable'>
+        <record-table @showEditDialog="showEditDialog" @showDeleteDialog="showDeleteDialog" ref="recordTable">
         </record-table>
       </el-tab-pane>
     </el-tabs>
@@ -19,7 +19,7 @@
       :visible.sync="editDialogVisible"
       width="30%"
       :before-close="handleClose">
-      <span><el-input v-model="targetName"></el-input></span>
+      <span><el-input v-model="targetName" autofocus></el-input></span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="reset">取 消</el-button>
         <el-button type="primary" @click="confirmChange">确 定</el-button>
@@ -58,7 +58,7 @@ export default {
       targetModel: 'category',
       targetId: 0,
       targetName: '',
-      originName: ''
+      originName: 'xxx'
     }
   },
   methods: {
@@ -81,9 +81,13 @@ export default {
     setModel(tab) {
       this.targetModel = tab.name
     },
-    showEditDialog(id, action) {
+    showEditDialog(id, origin, action) {
       this.action = action
       this.targetId = id
+      this.originName = origin
+      if (action == '修改备注') {
+        this.targetName = this.originName
+      }
       this.editDialogVisible = true
     },
     showDeleteDialog(id, name) {
@@ -91,12 +95,8 @@ export default {
       this.originName = name
       this.deleteDialogVisible = true
     },
-    handleClose(done) {
-      this.$confirm('确认关闭？')
-        .then(() => {
-          done();
-        })
-        .catch(() => {});
+    handleClose() {
+      this.reset()
     },
     confirmChange() {
       if (this.action == '添加标签') {
@@ -121,10 +121,10 @@ export default {
         }
         this.$axios.put(url, formData).then(res => {
           if (res.data.status == 200) {
-            this.$message.success('更新成功')
+            this.$message.success('更新成功！')
             this.refresh()
           }else {
-            this.$message.error('出错了')
+            this.$message.error('出错了！')
           }
         })
       }
@@ -134,10 +134,10 @@ export default {
       const url = '/'+this.targetModel+'/'+this.targetId
       this.$axios.delete(url).then(res => {
         if (res.data.status == 200) {
-          this.$message.success('更新成功')
+          this.$message.success('删除成功！')
           this.refresh()
         }else {
-          this.$message.error('出错了')
+          this.$message.error('出错了！')
         }
       this.reset()
       })

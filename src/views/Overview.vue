@@ -23,6 +23,7 @@ export default {
   },
   mounted() {
     this.$store.commit('setCategory', 0)
+    this.$store.dispatch('fetchCategory')
   }
 }
 </script>
