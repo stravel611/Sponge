@@ -9,10 +9,13 @@
         <item-table @showEditDialog="showEditDialog" @showDeleteDialog="showDeleteDialog" ref="itemTable">
         </item-table>
       </el-tab-pane>
-      <el-tab-pane label="记录管理" name="record">记录管理</el-tab-pane>
+      <el-tab-pane label="记录管理" name="record">
+        <record-table @showEditDialog="showEditDialog" @showDeleteDialog="showDeleteDialog" ref = 'recordTable'>
+        </record-table>
+      </el-tab-pane>
     </el-tabs>
     <el-dialog
-      title="更改名称"
+      :title="action"
       :visible.sync="editDialogVisible"
       width="30%"
       :before-close="handleClose">
@@ -39,16 +42,19 @@
 <script>
 import CategoryTable from '../components/tables/CategoryTable'
 import ItemTable from '../components/tables/ItemTable'
+import RecordTable from '../components/tables/RecordTable'
 
 export default {
   components: {
     'category-table': CategoryTable,
-    'item-table': ItemTable
+    'item-table': ItemTable,
+    'record-table': RecordTable
   },  
   data() {
     return {
       editDialogVisible: false,
       deleteDialogVisible: false,
+      action: '',
       targetModel: 'category',
       targetId: 0,
       targetName: '',
@@ -61,11 +67,22 @@ export default {
       this.deleteDialogVisible = false,
       this.targetId = 0,
       this.targetName = ''
+      this.action = ''
+    },
+    refresh() {
+      if (this.targetModel == 'category') {
+        this.$store.dispatch('fetchCategory')
+      }else if (this.targetModel == 'item') {
+        this.$refs.itemTable.fetchItems()
+      }else if (this.targetModel == 'record') {
+        this.$refs.recordTable.fetchRecords()
+      }
     },
     setModel(tab) {
       this.targetModel = tab.name
     },
-    showEditDialog(id) {
+    showEditDialog(id, action) {
+      this.action = action
       this.targetId = id
       this.editDialogVisible = true
     },
@@ -82,17 +99,35 @@ export default {
         .catch(() => {});
     },
     confirmChange() {
-      const url = '/'+this.targetModel+'/'+this.targetId
-      const formData = new FormData()
-      formData.append('name', this.targetName)
-      this.$axios.put(url, formData).then(res => {
-        if (res.data.status == 200) {
-          this.$message.success('更新成功')
-          this.$store.dispatch('fetchCategory')
+      if (this.action == '添加标签') {
+        const url = '/record/'+this.targetId+'/tag'
+        const formData = new FormData()
+        formData.append('name', this.targetName)
+        this.$axios.post(url, formData).then(res => {
+          if (res.data.status == 201) {
+            this.$message.success('更新成功')
+            this.refresh()
+          }else {
+            this.$message.error('出错了')
+          }
+        })
+      }else {
+        const url = '/'+this.targetModel+'/'+this.targetId
+        const formData = new FormData()
+        if (this.action == '更改名称') {
+          formData.append('name', this.targetName)
         }else {
-          this.$message.error('出错了')
+          formData.append('remark', this.targetName)
         }
-      })
+        this.$axios.put(url, formData).then(res => {
+          if (res.data.status == 200) {
+            this.$message.success('更新成功')
+            this.refresh()
+          }else {
+            this.$message.error('出错了')
+          }
+        })
+      }
       this.reset()
     },
     confirmDelete() {
@@ -100,11 +135,7 @@ export default {
       this.$axios.delete(url).then(res => {
         if (res.data.status == 200) {
           this.$message.success('更新成功')
-          if (this.targetModel == 'category') {
-            this.$store.dispatch('fetchCategory')
-          }else if (this.targetModel == 'item') {
-            this.$refs.itemTable.fetchItems()
-          }
+          this.refresh()
         }else {
           this.$message.error('出错了')
         }

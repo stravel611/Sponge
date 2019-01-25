@@ -141,7 +141,7 @@ export default {
 <style scoped>
 .status {
   width: 100%;
-  height: calc((100vh - 60px) / 2 - 1px);
+  height: 25%;
   display: flex;
   flex-direction: column;
 }

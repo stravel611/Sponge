@@ -79,13 +79,13 @@ a {
   box-shadow: 0 1px 3px rgba(26, 26, 26, 0.1);
 }
 .sidebar-l {
-  min-height: calc(100vh - 60px);
+  height: calc(100vh - 60px);
   width: calc(15vw - 1px);
   min-width: 199px;
   border-right: solid 1px #e6e6e6;
 }
 .sidebar-r {
-  min-height: calc(100vh - 60px);
+  height: calc(100vh - 60px);
   width: calc(85vw - 1250px);
   min-width: 300px;
   border-left: solid 1px #e6e6e6;

@@ -27,7 +27,7 @@ export default {
   },
   methods: {
     handleRename: function(index, row) {
-      this.$emit('showEditDialog', row.id)
+      this.$emit('showEditDialog', row.id, '更改名称')
     },
     handleDelete: function(index, row) {
       this.$emit('showDeleteDialog', row.id, row.name)

@@ -114,7 +114,8 @@ class TagOfRecord(Resource):
 
     def delete(self, record_id):
         """在一条记录下删除一个标签"""
-        tag_id = request.form.get('id', type=int)
+        tag_id = request.args.get('id', type=int)
+        print(tag_id)
         if tag_id:
             record = check_or_raise(RecordM, 'id', record_id)
             tag = check_or_raise(TagM, 'id', tag_id)

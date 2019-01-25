@@ -109,8 +109,8 @@ export default {
 
 <style scoped>
 .todo {
-  width: 100%;
-  height: calc((100vh - 60px) / 2);
+  height: calc(75% - 10px);
+  padding: 5px;
 }
 .actions {
   display: flex;
@@ -125,7 +125,7 @@ export default {
   margin-bottom: 4px;
 }
 .todo-items {
-  height: calc(100% - 74px);
+  max-height: calc(100% - 80px);
   overflow-y: auto;
 }
 ul {

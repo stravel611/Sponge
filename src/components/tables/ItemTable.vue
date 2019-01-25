@@ -29,7 +29,6 @@ export default {
   },
   methods: {
     fetchItems() {
-      console.log('fetching')
       const url = '/item'
       this.$axios.get(url).then(res => {
         if (res.data.status == 200) {
@@ -40,7 +39,7 @@ export default {
       })
     },
     handleRename: function(index, row) {
-      this.$emit('showEditDialog', row.id)
+      this.$emit('showEditDialog', row.id, '更改名称')
     },
     handleDelete: function(index, row) {
       this.$emit('showDeleteDialog', row.id, row.name)
