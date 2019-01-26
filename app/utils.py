@@ -4,11 +4,16 @@ from werkzeug.exceptions import BadRequest, Conflict, NotFound
 from flask_restful.fields import Raw
 
 
-def create_or_raise(model, key, value):
-    item = model.query.filter(getattr(model, key) == value).first()
-    if item is None:
+#-------------------------数据库模型工具-------------------------
+def create_or_raise(model, **kwargs):
+    """尝试在一个模型下创建一条记录，如果已存在则抛出异常"""
+    item = model.query
+    for k, v in kwargs.items():
+        item = item.filter(getattr(model,k) == v)
+    if item.first() is None:
         item = model()
-        setattr(item, key, value)
+        for k, v in kwargs.items():
+            setattr(item, k, v)
         db.session.add(item)
         db.session.commit()
         return item
@@ -16,24 +21,34 @@ def create_or_raise(model, key, value):
         raise AlreadyExisted()
 
 
-def check_or_raise(model, key, value):
-    item = model.query.filter(getattr(model, key) == value).first()
+def get_or_raise(model, **kwargs):
+    """尝试在一个模型下查找一条记录，如果不存在则抛出异常"""
+    item = model.query
+    for k, v in kwargs.items():
+        item = item.filter(getattr(model, k) == v)
+    item = item.first()
     if item:
         return item
     else:
         raise NotFound()
 
 
-def get_or_create(model, key, value):
-    item = model.query.filter(getattr(model, key) == value).first()
+def get_or_create(model, **kwargs):
+    """尝试在一个模型下查找一条记录，如果不存在则创建记录"""
+    item = model.query
+    for k, v in kwargs.items():
+        item = item.filter(getattr(model, k) == v)
+    item = item.first()
     if item is None:
         item = model()
-        setattr(item, key, value)
+        for k, v in kwargs.items():
+            setattr(item, k, v)
         db.session.add(item)
         db.session.commit()
     return item
 
 
+#-------------------------异常-------------------------
 class MissingFormData(BadRequest):
     """表单参数缺失"""
 
@@ -46,12 +61,14 @@ class RedundantUpdate(Conflict):
     """请求更新内容与原内容相同"""
 
 
-class ParseToTimeStamp(Raw):
+#-------------------------API 响应格式化工具-------------------------
+class TimeStamp(Raw):
     def format(self, value):
         return value.timestamp() * 1000
 
 
 class ReadableTime(Raw):
+    """将 datetime 转化为如 '3月16日 08:46:02' 的格式"""
     def format(self, value):
         hour = value.hour if value.hour >=10 else '0'+str(value.hour)
         minute = value.minute if value.minute >= 10 else '0'+str(value.minute)

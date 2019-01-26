@@ -2,7 +2,7 @@
 from flask_restful import Resource, fields, marshal_with
 from app.models import Record as RecordM, Item as ItemM
 from flask import abort, request
-from app.utils import check_or_raise, MissingFormData, RedundantUpdate, ParseToTimeStamp, ReadableTime
+from app.utils import get_or_raise, MissingFormData, RedundantUpdate, TimeStamp, ReadableTime
 from app.exts import db
 from datetime import datetime
 
@@ -17,7 +17,7 @@ def query_filter(query):
         )
     if to_time:
         query = query.filter(
-            RecordM.finish < datetime.fromtimestamp(to_time / 1000)
+            RecordM.start < datetime.fromtimestamp(to_time / 1000)
         )
     if limit:
         query = query.limit(limit)
@@ -30,9 +30,9 @@ single_record_fields = {
     'data': fields.Nested({
         'id': fields.Integer,
         'start': ReadableTime(attribute='start'),
-        'start_stamp': ParseToTimeStamp(attribute='start'),
+        'start_stamp': TimeStamp(attribute='start'),
         'finish': ReadableTime(attribute='finish'),
-        'finish_stamp': ParseToTimeStamp(attribute='finish'),
+        'finish_stamp': TimeStamp(attribute='finish'),
         'remark': fields.String,
         'item': fields.Nested({
             'id': fields.Integer,
@@ -51,9 +51,9 @@ multi_records_fields = {
     'data': fields.List(fields.Nested({
         'id': fields.Integer,
         'start': ReadableTime(attribute='start'),
-        'start_stamp': ParseToTimeStamp(attribute='start'),
+        'start_stamp': TimeStamp(attribute='start'),
         'finish': ReadableTime(attribute='finish'),
-        'finish_stamp': ParseToTimeStamp(attribute='finish'),
+        'finish_stamp': TimeStamp(attribute='finish'),
         'remark': fields.String,
         'item': fields.Nested({
             'id': fields.Integer,
@@ -68,9 +68,12 @@ multi_records_fields = {
 
 
 class Record(Resource):
+    """
+    /record
+    """
     @marshal_with(multi_records_fields)
     def get(self):
-        """获取所有记录"""
+        """获取所有记录，按开始时间降序排序"""
         query = RecordM.query.order_by(RecordM.id.desc())
         records = query_filter(query).all()
         if records and not records[0].finish:
@@ -83,6 +86,9 @@ class Record(Resource):
 
 
 class RecordMember(Resource):
+    """
+    /record/<int:record_id>
+    """
     @marshal_with(single_record_fields)
     def get(self, record_id):
         """获取一条记录的详情"""
@@ -145,9 +151,12 @@ class RecordMember(Resource):
 
 
 class RecordOfCategory(Resource):
+    """
+    /category/<int:category_id>/record
+    """
     @marshal_with(multi_records_fields)
     def get(self, category_id):
-        """获取一个分类下的所有记录"""
+        """获取一个分类下的所有记录，按开始时间降序排序"""
         query = RecordM.query.join(RecordM.item)\
             .filter(ItemM.category_id == category_id)\
             .order_by(RecordM.id.desc())
@@ -162,9 +171,12 @@ class RecordOfCategory(Resource):
 
 
 class RecordOfItem(Resource):
+    """
+    /item/<int:item_id>/record
+    """
     @marshal_with(multi_records_fields)
     def get(self, item_id):
-        """获取一个条目下的所有记录"""
+        """获取一个条目下的所有记录，按开始时间降序排序"""
         query = RecordM.query.filter_by(item_id=item_id).order_by(RecordM.id.desc())
         records = query_filter(query).all()
         return {
@@ -177,7 +189,7 @@ class RecordOfItem(Resource):
     def post(self, item_id):
         """在一个条目下创建一条记录"""
         remark = request.form.get('remark', '')
-        item = check_or_raise(ItemM, 'id', item_id)
+        item = get_or_raise(ItemM, id=item_id)
         start = datetime.now()
         record = RecordM(start=start, remark=remark)
         record.item = item
@@ -191,9 +203,12 @@ class RecordOfItem(Resource):
 
 
 class RecordProceeding(Resource):
+    """
+    /record/proceeding
+    """
     @marshal_with(single_record_fields)
     def get(self):
-        """正在进行的记录"""
+        """获取正在进行的记录"""
         record = RecordM.query.order_by(RecordM.id.desc()).first()
         if record and record.finish:
             record = None

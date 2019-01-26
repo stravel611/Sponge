@@ -2,7 +2,7 @@
 from flask_restful import Resource, fields, marshal_with
 from app.models import Item as ItemM, Category as CategoryM, Record as RecordM
 from flask import abort, request
-from app.utils import create_or_raise, check_or_raise,  MissingFormData, RedundantUpdate, ParseToTimeStamp, ReadableTime
+from app.utils import create_or_raise, get_or_raise,  MissingFormData, RedundantUpdate, TimeStamp, ReadableTime
 from app.exts import db
 from .record import query_filter
 
@@ -20,9 +20,9 @@ single_item_fields = {
         'recent_records': fields.List(fields.Nested({
             'id': fields.Integer,
             'start': ReadableTime(attribute='start'),
-            'start_stamp': ParseToTimeStamp(attribute='start'),
+            'start_stamp': TimeStamp(attribute='start'),
             'finish': ReadableTime(attribute='finish'),
-            'finish_stamp': ParseToTimeStamp(attribute='finish'),
+            'finish_stamp': TimeStamp(attribute='finish'),
             'remark': fields.String
         }))
     })
@@ -41,9 +41,9 @@ multi_items_fields = {
         'recent_records': fields.List(fields.Nested({
             'id': fields.Integer,
             'start': ReadableTime(attribute='start'),
-            'start_stamp': ParseToTimeStamp(attribute='start'),
+            'start_stamp': TimeStamp(attribute='start'),
             'finish': ReadableTime(attribute='finish'),
-            'finish_stamp': ParseToTimeStamp(attribute='finish'),
+            'finish_stamp': TimeStamp(attribute='finish'),
             'remark': fields.String
         }))
     }))
@@ -60,6 +60,9 @@ calculation_fields = {
 
 
 class Item(Resource):
+    """
+    /item
+    """
     @marshal_with(multi_items_fields)
     def get(self):
         """获取所有条目"""
@@ -75,7 +78,7 @@ class Item(Resource):
         """创建一个条目"""
         name = request.form.get('name', '')
         if name:
-            item = create_or_raise(ItemM, 'name', name)
+            item = create_or_raise(ItemM, name=name)
             db.session.add(item)
             db.session.commit()
             return {
@@ -88,6 +91,9 @@ class Item(Resource):
 
 
 class ItemMember(Resource):
+    """
+    /item/<int:item_id>
+    """
     @marshal_with(single_item_fields)
     def get(self, item_id):
         """获取一个条目的详情"""
@@ -154,8 +160,8 @@ class ItemOfCategory(Resource):
         """在一个分类下创建一个条目"""
         name = request.form.get('name', '')
         if name:
-            category = check_or_raise(CategoryM, 'id', category_id)
-            item = create_or_raise(ItemM, 'name', name)
+            category = get_or_raise(CategoryM, id=category_id)
+            item = create_or_raise(ItemM, name=name)
             item.category = category
             db.session.add(item)
             db.session.commit()
@@ -169,6 +175,9 @@ class ItemOfCategory(Resource):
 
 
 class CalcOfItem(Resource):
+    """
+    /category/<int:category_id>/calculation
+    """
     @marshal_with(calculation_fields)
     def get(self, category_id):
         """获取一个分类下的所有条目的记录的时间总和（秒）"""

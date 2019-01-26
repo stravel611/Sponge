@@ -44,6 +44,9 @@ calculation_fields = {
 
 
 class Category(Resource):
+    """
+    /category
+    """
     @marshal_with(multi_categories_fields)
     def get(self):
         """获取所有分类"""
@@ -59,7 +62,7 @@ class Category(Resource):
         """创建一个分类"""
         name = request.form.get('name', '')
         if name:
-            category = create_or_raise(CategoryM, 'name', name)
+            category = create_or_raise(CategoryM, name=name)
             return {
                 'status': 201,
                 'message': 'Created',
@@ -70,6 +73,9 @@ class Category(Resource):
 
 
 class CategoryMember(Resource):
+    """
+    /category/<int:category_id>
+    """
     @marshal_with(single_category_fields)
     def get(self, category_id):
         """获取一个分类的详情"""
@@ -121,6 +127,9 @@ class CategoryMember(Resource):
 
 
 class CalcOfCategory(Resource):
+    """
+    /category/<int:category_id>/calculation
+    """
     @marshal_with(calculation_fields)
     def get(self):
         """获取一个分类下的所有条目的记录的时间总和（秒）"""

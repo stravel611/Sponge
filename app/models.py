@@ -11,14 +11,14 @@ record_tag = db.Table(
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(10))
+    name = db.Column(db.String(10), unique=True)
 
     items = db.relationship('Item', back_populates='category', cascade='all, delete-orphan')
 
 
 class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(10))
+    name = db.Column(db.String(10), unique=True)
 
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
 
@@ -44,7 +44,7 @@ class Record(db.Model):
 
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(10))
+    name = db.Column(db.String(10), unique=True)
 
     records = db.relationship('Record', secondary=record_tag, back_populates='tags')
 
