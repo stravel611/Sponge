@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <!-- 顶部导航条 -->
     <div id="nav">
       <el-menu
         class="el-menu-demo"
@@ -18,16 +19,20 @@
         <el-menu-item index="8">顶部导航条</el-menu-item>
       </el-menu>
     </div>
+    <!-- 顶部导航条结束 -->
     <div id="main-page">
+      <!-- 左边栏 -->
       <div class="grid-content sidebar-l">
         <sponge-sidebar></sponge-sidebar>
       </div>
+      <!-- 主内容 -->
       <div class="grid-content page-content">
         <router-view></router-view>
       </div>
+      <!-- 右边栏 -->
       <div class="grid-content sidebar-r">
         <sponge-status></sponge-status>
-        <sponge-memo></sponge-memo>
+        <sponge-todo></sponge-todo>
       </div>
     </div>
   </div>
@@ -36,18 +41,19 @@
 <script>
 import Sidebar from "./components/Sidebar";
 import Status from "./components/Status";
-import Memo from "./components/Memo";
+import TodoList from "./components/TodoList";
 
 export default {
   components: {
     "sponge-sidebar": Sidebar,
     "sponge-status": Status,
-    "sponge-memo": Memo
+    "sponge-todo": TodoList
   },
   data() {
     return {};
   },
   mounted() {
+    // 挂载时从服务器获得分类情况，和是否有正在进行的记录
     this.$store.dispatch("fetchProceeding");
     this.$store.dispatch("fetchCategory");
   }

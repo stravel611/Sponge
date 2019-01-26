@@ -95,6 +95,7 @@ export default {
         this.$store.dispatch("fetchProceeding");
       });
     },
+    // 计时器 60 进 1
     checkTimer: function(count, unit) {
       if (count == 60) {
         if (unit == "second") {
@@ -116,6 +117,7 @@ export default {
     }
   },
   watch: {
+    // 根据 state 中的参数变更计时器状态
     "$store.state.proceeding": function(to) {
       if (to == null) {
         this.second = this.minute = this.hour = 0;
