@@ -125,7 +125,7 @@ class CategoryTestCase(BaseTestCase):
     def test_calculation_of_category(self):
         """
         api: /category/<int:category_id>/calculation
-        methods: get: 获取一个分类下的所有条目的记录的时间总和（秒）
+        methods: get: 获取每一个分类下的所有条目的记录的时间总和（秒）
         """
         category = Category.query.first()
         item = Item(name='test_item')
@@ -137,7 +137,7 @@ class CategoryTestCase(BaseTestCase):
         record.item = item
         db.session.add(record)
         db.session.commit()
-        res = self.client.get(BASE_URL + '/category/1/calculation').get_json()
+        res = self.client.get(BASE_URL + '/category/calculation').get_json()
         self.assertEqual(200, res['status'])
         self.assertEqual(3600, res['data'][0]['value'])
 
@@ -250,7 +250,7 @@ class ItemTestCase(BaseTestCase):
     def test_calculation_of_item(self):
         """
         api: /category/<int:category_id>/calculation
-        methods: get: 获取一个分类下的所有条目的记录的时间总和（秒）
+        methods: get: 获取一个分类下的每个条目的记录的时间总和（秒）
         """
         item = Item.query.first()
         record = Record(
